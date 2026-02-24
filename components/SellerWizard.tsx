@@ -1,4 +1,3 @@
-"use client";
 import { useState, useEffect, useRef } from "react";
 
 const UTILITY_STEPS = [
@@ -69,7 +68,7 @@ const UTILITY_STEPS = [
 ];
 
 // Shown while API loads, and as fallback if API call fails
-const STATIC_PROVIDERS = {
+const STATIC_PROVIDERS: any = {
   electric: [
     "PPL Electric Utilities",
     "PECO Energy",
@@ -138,12 +137,8 @@ const ALWAYS_INCLUDE: any = {
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-interface UseTypewriterReturn {
-  [key: string]: string;
-}
-
-function useTypewriter(text: string, speed: number = 25): string {
-  const [d, setD] = useState<string>("");
+function useTypewriter(text: any, speed = 25) {
+  const [d, setD] = useState("");
   useEffect(() => {
     setD("");
     let i = 0;
@@ -152,11 +147,11 @@ function useTypewriter(text: string, speed: number = 25): string {
       if (i >= text.length) clearInterval(t);
     }, speed);
     return () => clearInterval(t);
-  }, [text, speed]);
+  }, [text]);
   return d;
 }
 
-function ProgressBar({ current, total }: { current: number; total: number }) {
+function ProgressBar({ current, total }: any) {
   return (
     <div
       style={{
@@ -193,15 +188,7 @@ function ProgressBar({ current, total }: { current: number; total: number }) {
   );
 }
 
-function Chip({
-  label,
-  selected,
-  onClick,
-}: {
-  label: string;
-  selected: boolean;
-  onClick: () => void;
-}) {
+function Chip({ label, selected, onClick }: any) {
   return (
     <button
       onClick={onClick}
@@ -227,7 +214,7 @@ function Chip({
 }
 
 // ── Address Screen ────────────────────────────────────────────────────────────
-function AddressScreen({ onNext }: { onNext: (address: string) => void }) {
+function AddressScreen({ onNext }: any) {
   const [address, setAddress] = useState("");
   const [focused, setFocused] = useState(false);
   const ph = useTypewriter("123 Maple Street, Philadelphia, PA 19103", 40);
@@ -325,7 +312,6 @@ function AddressScreen({ onNext }: { onNext: (address: string) => void }) {
             background: "#faf9f7",
             boxShadow: focused ? "0 0 0 4px rgba(217,119,6,0.1)" : "none",
           }}
-          className="text-black"
         />
       </div>
       <button
@@ -353,19 +339,6 @@ function AddressScreen({ onNext }: { onNext: (address: string) => void }) {
 }
 
 // ── Utility Step ──────────────────────────────────────────────────────────────
-interface UtilityStepProps {
-  util: any;
-  stepIndex: number;
-  totalSteps: number;
-  onNext: () => void;
-  onBack: () => void;
-  selections: Record<string, string>;
-  setSelections: (
-    updater: (prev: Record<string, string>) => Record<string, string>,
-  ) => void;
-  address: string;
-}
-
 function UtilityStep({
   util,
   stepIndex,
@@ -375,10 +348,8 @@ function UtilityStep({
   selections,
   setSelections,
   address,
-}: UtilityStepProps) {
-  const [providers, setProviders] = useState(
-    STATIC_PROVIDERS[util.id as keyof typeof STATIC_PROVIDERS] || [],
-  );
+}: any) {
+  const [providers, setProviders] = useState(STATIC_PROVIDERS[util.id] || []);
   const [loading, setLoading] = useState(false);
   const [isLocal, setIsLocal] = useState(false);
   const [custom, setCustom] = useState("");
@@ -408,7 +379,7 @@ function UtilityStep({
   }, [util.id, address]);
 
   // Build display list — merge providers + always-include options, remove duplicates
-  const always = ALWAYS_INCLUDE[util.id as keyof typeof ALWAYS_INCLUDE] || [];
+  const always = ALWAYS_INCLUDE[util.id] || [];
   const displayList = [...new Set([...providers, ...always])];
 
   return (
@@ -493,7 +464,7 @@ function UtilityStep({
             label={p}
             selected={selected === p}
             onClick={() => {
-              setSelections((s) => ({ ...s, [util.id]: p }));
+              setSelections((s: any) => ({ ...s, [util.id]: p }));
               setCustom("");
               setShowCustom(false);
             }}
@@ -503,7 +474,7 @@ function UtilityStep({
           label="Not Sure"
           selected={selected === "Not Sure"}
           onClick={() => {
-            setSelections((s) => ({ ...s, [util.id]: "Not Sure" }));
+            setSelections((s: any) => ({ ...s, [util.id]: "Not Sure" }));
             setCustom("");
             setShowCustom(false);
           }}
@@ -536,9 +507,8 @@ function UtilityStep({
             onKeyDown={(e) =>
               e.key === "Enter" &&
               custom.trim() &&
-              setSelections((s) => ({ ...s, [util.id]: custom.trim() }))
+              setSelections((s: any) => ({ ...s, [util.id]: custom.trim() }))
             }
-            className="text-black"
             placeholder="Type exact provider name..."
             style={{
               flex: 1,
@@ -553,7 +523,7 @@ function UtilityStep({
           <button
             onClick={() =>
               custom.trim() &&
-              setSelections((s) => ({ ...s, [util.id]: custom.trim() }))
+              setSelections((s: any) => ({ ...s, [util.id]: custom.trim() }))
             }
             style={{
               background: "#d97706",
@@ -670,13 +640,7 @@ function ReviewScreen({
   onEdit,
   onSubmit,
   submitting,
-}: {
-  address: string;
-  selections: Record<string, string>;
-  onEdit: (index: number) => void;
-  onSubmit: () => void;
-  submitting: boolean;
-}) {
+}: any) {
   return (
     <div style={{ animation: "fadeUp 0.4s ease both" }}>
       <h2
@@ -812,17 +776,7 @@ function ReviewScreen({
 }
 
 // ── Success Screen ────────────────────────────────────────────────────────────
-function SuccessScreen({
-  address,
-  selections,
-  emailSent,
-  emailError,
-}: {
-  address: string;
-  selections: Record<string, string>;
-  emailSent: boolean;
-  emailError: string;
-}) {
+function SuccessScreen({ address, selections, emailSent, emailError }: any) {
   return (
     <div style={{ textAlign: "center", animation: "fadeUp 0.5s ease both" }}>
       <div style={{ fontSize: 60, marginBottom: 12 }}>🎉</div>
@@ -981,6 +935,8 @@ export default function SellerWizard({ token }: { token: string }) {
         const res = await fetch(`/api/get-agent?token=${token}`);
         const data = await res.json();
 
+        console.log("data", data);
+
         if (data.success) {
           setAgentEmail(data.agent.email);
           setAgentName(data.agent.full_name);
@@ -1061,7 +1017,7 @@ export default function SellerWizard({ token }: { token: string }) {
         >
           {screen === "address" && (
             <AddressScreen
-              onNext={(a) => {
+              onNext={(a: any) => {
                 setAddress(a);
                 setUtilIndex(0);
                 setScreen("utility");
