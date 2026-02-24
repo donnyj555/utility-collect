@@ -6,7 +6,7 @@ import {
   signOut,
 } from "../lib/supabase";
 
-const STATUS_STYLE = {
+const STATUS_STYLE: any = {
   submitted: {
     bg: "#dcfce7",
     text: "#15803d",
@@ -41,7 +41,7 @@ const UTILITY_LABELS = {
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://utilitycollect.app";
 
-function StatusBadge({ status }: { status: keyof typeof STATUS_STYLE }) {
+function StatusBadge({ status }: any) {
   const s = STATUS_STYLE[status] || STATUS_STYLE.sent;
   return (
     <span
@@ -72,13 +72,7 @@ function StatusBadge({ status }: { status: keyof typeof STATUS_STYLE }) {
   );
 }
 
-function SheetModal({
-  listing,
-  onClose,
-}: {
-  listing: any;
-  onClose: () => void;
-}) {
+function SheetModal({ listing, onClose }: any) {
   const [copied, setCopied] = useState(false);
   const link = `${APP_URL}/seller/${listing.intake_token}`;
   const copy = () => {
@@ -320,23 +314,8 @@ function SheetModal({
   );
 }
 
-function NewListingModal({
-  onClose,
-  onAdd,
-  saving,
-}: {
-  onClose: () => void;
-  onAdd: (form: {
-    address: string;
-    city: string;
-    sellerName: string;
-    sellerEmail: string;
-    listPrice: string;
-    mlsNumber: string;
-  }) => Promise<void>;
-  saving: boolean;
-}) {
-  const [form, setForm] = useState({
+function NewListingModal({ onClose, onAdd, saving }: any) {
+  const [form, setForm] = useState<any>({
     address: "",
     city: "",
     sellerName: "",
@@ -344,14 +323,8 @@ function NewListingModal({
     listPrice: "",
     mlsNumber: "",
   });
-  const set = (k: keyof typeof form, v: string) =>
-    setForm((f) => ({ ...f, [k]: v }));
-  const fields: {
-    key: keyof typeof form;
-    label: string;
-    placeholder: string;
-    full?: boolean;
-  }[] = [
+  const set = (k: any, v: any) => setForm((f: any) => ({ ...f, [k]: v }));
+  const fields = [
     {
       key: "address",
       label: "Property Address",
@@ -472,7 +445,6 @@ function NewListingModal({
                   value={form[f.key]}
                   onChange={(e) => set(f.key, e.target.value)}
                   placeholder={f.placeholder}
-                  className="text-black"
                   style={{
                     width: "100%",
                     border: "1px solid #e7e5e4",
@@ -538,11 +510,11 @@ function NewListingModal({
   );
 }
 
-function Toast({ message, onDone }: { message: string; onDone: () => void }) {
+function Toast({ message, onDone }: any) {
   useEffect(() => {
     const t = setTimeout(onDone, 3000);
     return () => clearTimeout(t);
-  }, [onDone]);
+  }, []);
   return (
     <div
       style={{
@@ -566,15 +538,9 @@ function Toast({ message, onDone }: { message: string; onDone: () => void }) {
   );
 }
 
-interface Agent {
-  full_name?: string;
-  brokerage?: string;
-  intake_slug?: string;
-}
-
 export default function AgentDashboard() {
-  const [listings, setListings] = useState<any[]>([]);
-  const [agent, setAgent] = useState<Agent | null>(null);
+  const [listings, setListings] = useState<any>([]);
+  const [agent, setAgent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [filter, setFilter] = useState("all");
@@ -585,7 +551,7 @@ export default function AgentDashboard() {
 
   useEffect(() => {
     Promise.all([getListings(), getAgentProfile()])
-      .then(([l, a]) => {
+      .then(([l, a]: any) => {
         setListings(l || []);
         setAgent(a);
       })
@@ -594,7 +560,7 @@ export default function AgentDashboard() {
   }, []);
 
   // Auto-calculate overdue status client-side (no cron job needed)
-  const enriched = listings.map((l) => ({
+  const enriched = listings.map((l: any) => ({
     ...l,
     status:
       l.status === "sent" &&
@@ -604,7 +570,7 @@ export default function AgentDashboard() {
   }));
 
   const filtered = enriched.filter(
-    (l) =>
+    (l: any) =>
       (filter === "all" || l.status === filter) &&
       (!search ||
         l.address.toLowerCase().includes(search.toLowerCase()) ||
@@ -613,47 +579,22 @@ export default function AgentDashboard() {
 
   const stats = {
     total: enriched.length,
-    submitted: enriched.filter((l) => l.status === "submitted").length,
-    pending: enriched.filter((l) => ["sent", "in_progress"].includes(l.status))
-      .length,
-    overdue: enriched.filter((l) => l.status === "overdue").length,
+    submitted: enriched.filter((l: any) => l.status === "submitted").length,
+    pending: enriched.filter((l: any) =>
+      ["sent", "in_progress"].includes(l.status),
+    ).length,
+    overdue: enriched.filter((l: any) => l.status === "overdue").length,
   };
 
-  interface ListingForm {
-    address: string;
-    city: string;
-    sellerName: string;
-    sellerEmail: string;
-    listPrice: string;
-    mlsNumber: string;
-  }
-
-  interface Listing {
-    id: string;
-    address: string;
-    city: string;
-    seller_name: string;
-    seller_email: string;
-    list_price: string;
-    mls_number: string;
-    intake_token: string;
-    status: "submitted" | "in_progress" | "sent" | "overdue";
-    sent_at: string;
-    submitted_at?: string;
-    utilities?: Record<string, string>;
-  }
-
-  const handleAdd = async (form: ListingForm): Promise<void> => {
+  const handleAdd = async (form: any) => {
     setSaving(true);
     try {
-      const newL: Listing = await createListing(form);
-      setListings((prev: Listing[]) => [newL, ...prev]);
+      const newL: any = await createListing(form);
+      setListings((prev: any) => [newL, ...prev]);
       setShowNew(false);
       setToast("✅ Listing created! Copy the seller link to share.");
-    } catch (err) {
-      setToast(
-        "❌ Error: " + (err instanceof Error ? err.message : "Unknown error"),
-      );
+    } catch (err: any) {
+      setToast("❌ Error: " + err.message);
     } finally {
       setSaving(false);
     }
@@ -662,7 +603,7 @@ export default function AgentDashboard() {
   const initials =
     agent?.full_name
       ?.split(" ")
-      .map((n) => n[0])
+      .map((n: any) => n[0])
       .join("")
       .slice(0, 2)
       .toUpperCase() || "AG";
@@ -1043,7 +984,6 @@ export default function AgentDashboard() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search address or seller…"
-                className="text-black"
                 style={{
                   width: "100%",
                   border: "1px solid #e7e5e4",
@@ -1095,7 +1035,7 @@ export default function AgentDashboard() {
                       padding: "1px 6px",
                     }}
                   >
-                    {enriched.filter((l) => l.status === f).length}
+                    {enriched.filter((l: any) => l.status === f).length}
                   </span>
                 )}
               </button>
@@ -1166,7 +1106,7 @@ export default function AgentDashboard() {
                 </div>
               </div>
             ) : (
-              filtered.map((listing, i) => (
+              filtered.map((listing: any, i: any) => (
                 <div
                   key={listing.id}
                   style={{
@@ -1197,9 +1137,7 @@ export default function AgentDashboard() {
                         width: 3,
                         borderRadius: 99,
                         background:
-                          STATUS_STYLE[
-                            listing.status as keyof typeof STATUS_STYLE
-                          ]?.dot || "#e2e8f0",
+                          STATUS_STYLE[listing.status]?.dot || "#e2e8f0",
                         alignSelf: "stretch",
                         flexShrink: 0,
                         minHeight: 36,

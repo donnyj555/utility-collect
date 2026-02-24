@@ -21,16 +21,23 @@ export async function GET(req: Request) {
     .eq("intake_token", token)
     .single();
 
+  console.log("Token:", token);
+  console.log("Listing:", listing);
+  console.log("Listing error:", error);
+
   if (error || !listing) {
     return NextResponse.json({ success: false });
   }
 
   // 2️⃣ Get agent
-  const { data: agent } = await supabase
+  const { data: agent, error: agentError } = await supabase
     .from("agents")
     .select("email, full_name")
     .eq("id", listing.agent_id)
     .single();
+
+  console.log("Agent:", agent);
+  console.log("Agent error:", agentError);
 
   return NextResponse.json({
     success: true,
