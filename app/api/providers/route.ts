@@ -1,3 +1,5 @@
+import { NextRequest, NextResponse } from "next/server";
+
 // ─── ZIP CODE → UTILITY PROVIDERS DATABASE ───────────────────────────────────
 const ZIP_DATABASE: any = {
   // ── Monroe County PA (Poconos) ──────────────────────────────────────────────
@@ -454,16 +456,17 @@ const ALWAYS_INCLUDE: any = {
   oil: ["Not Applicable"],
 };
 
-function extractZip(address: any) {
+// Extract ZIP and state helpers (same as before)
+function extractZip(address: string) {
   const match = address.match(/\b(\d{5})(-\d{4})?\b/);
   return match ? match[1] : null;
 }
 
-function extractState(address: any) {
+function extractState(address: string) {
   const upper = address.toUpperCase();
   const match = upper.match(/\b([A-Z]{2})\b[\s,]*\d{5}/);
   if (match) return match[1];
-  const names = {
+  const names: Record<string, string> = {
     PENNSYLVANIA: "PA",
     "NEW JERSEY": "NJ",
     "NEW YORK": "NY",
@@ -479,21 +482,28 @@ function extractState(address: any) {
   return null;
 }
 
-export default async function handler(req: any, res: any) {
-  if (req.method !== "GET")
-    return res.status(405).json({ error: "Method not allowed" });
+// ── Named GET handler for App Router ──────────────────────────────
+export async function GET(req: NextRequest) {
+  const url = new URL(req.url);
+  const address = url.searchParams.get("address") || "";
+  const utilityType = url.searchParams.get("utilityType") || "";
 
-  const { address, utilityType } = req.query;
-  if (!address || !utilityType)
-    return res.status(400).json({ error: "Missing address or utilityType" });
+  if (!address || !utilityType) {
+    return NextResponse.json(
+      { error: "Missing address or utilityType" },
+      { status: 400 },
+    );
+  }
 
-  if (utilityType === "hoa")
-    return res.status(200).json({ providers: [], source: "static" });
+  if (utilityType === "hoa") {
+    return NextResponse.json({ providers: [], source: "static" });
+  }
 
+  // ── Determine providers ─────────────────────────────
   const zip = extractZip(address);
   const state = extractState(address);
 
-  let providers = [];
+  let providers: string[] = [];
   let source = "national_fallback";
 
   if (zip && ZIP_DATABASE[zip]?.[utilityType]) {
@@ -510,7 +520,7 @@ export default async function handler(req: any, res: any) {
   const always = ALWAYS_INCLUDE[utilityType] || [];
   const merged = [...new Set([...providers, ...always])];
 
-  return res.status(200).json({
+  return NextResponse.json({
     providers: merged,
     source,
     zip: zip || "not found",
