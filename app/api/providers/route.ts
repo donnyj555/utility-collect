@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 const ZIP_DATABASE: any = {
   // ── Monroe County PA (Poconos) ──────────────────────────────────────────────
   "18301": {
-    electric: ["PPL Electric Utilities"],
+    electric: ["PPL Electric Utilities", "Met-Ed (FirstEnergy)"],,
     gas: ["UGI Utilities", "No Natural Gas / Propane Only"],
     water: [
       "Aqua Pennsylvania",
@@ -22,7 +22,7 @@ const ZIP_DATABASE: any = {
     oil: ["Ferrellgas", "Suburban Propane", "AmeriGas", "Local Oil Dealer"],
   },
   "18302": {
-    electric: ["PPL Electric Utilities"],
+electric: ["PPL Electric Utilities", "Met-Ed (FirstEnergy)"]
     gas: ["UGI Utilities", "No Natural Gas / Propane Only"],
     water: ["Aqua Pennsylvania", "Private Well"],
     sewer: ["Private Septic System", "Municipal Sewer"],
@@ -31,7 +31,7 @@ const ZIP_DATABASE: any = {
     oil: ["Ferrellgas", "Suburban Propane", "AmeriGas"],
   },
   "18360": {
-    electric: ["PPL Electric Utilities"],
+    electric: ["PPL Electric Utilities", "Met-Ed (FirstEnergy)",
     gas: ["UGI Utilities", "No Natural Gas / Propane Only"],
     water: ["Aqua Pennsylvania", "Stroudsburg Municipal Water", "Private Well"],
     sewer: ["Stroudsburg Sewer Authority", "Private Septic System"],
